@@ -78,6 +78,10 @@ class Logger(object):
         self.log.setFormatter(self.formatter)
         self.logger.addHandler(self.log)
 
+    def trace(self, msg):
+        print(msg)
+        self.logger.info(msg)
+
     def info(self, msg):
         msg = "%s:%s %s] %s" % ("/".join(sys._getframe().f_back.f_code.co_filename.split('/')[-3:]),
                                 sys._getframe().f_back.f_lineno, sys._getframe().f_back.f_code.co_name, msg)

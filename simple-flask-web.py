@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 __author__ = 'hunter'
 from app import create_app, conf
+from app.util.logger_util import logger
 
 
 app = create_app()

@@ -1,8 +1,7 @@
 # -*- coding: UTF-8 -*-
 __author__ = 'hunter'
 import os
-import platform
-import socket
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -13,7 +12,7 @@ class Config:
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
     MAIL_PORT = int(os.environ.get('MAIL_PORT', '587'))
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in \
-        ['true', 'on', '1']
+                   ['true', 'on', '1']
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
@@ -31,7 +30,6 @@ class Config:
     SQLALCHEMY_POOL_TIMEOUT = 10
     SQLALCHEMY_POOL_RECYCLE = 7200
 
-
     redis_nodes = [{"host": "127.0.0.1", "port": "6379"}]
     redis_password = "123"
     REDIS_MAX_CONNECTIONS = 100
@@ -45,8 +43,24 @@ class DevelopmentConfig(Config):
     description = "开发环境"
     DEBUG = True
     debug = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
+    SQLALCHEMY_DATABASE_URI = "mysql://{username}:{password}@{host}/{database}?charset={charset}".format(
+        username="root",
+        password="123",
+        host="{}:{}".format("127.0.0.1", "3306"),
+        database="my-db",
+        charset="utf8mb4")
+
+
+class BetaConfig(Config):
+    description = "Beta环境"
+    DEBUG = True
+    debug = True
+    SQLALCHEMY_DATABASE_URI = "mysql://{username}:{password}@{host}/{database}?charset={charset}".format(
+        username="root",
+        password="123",
+        host="{}:{}".format("127.0.0.1", "3306"),
+        database="my-db",
+        charset="utf8mb4")
 
 
 class TestingConfig(Config):
@@ -62,6 +76,8 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     description = "生产环境"
+    DEBUG = False
+    debug = False
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_DATABASE_URI = "mysql://{username}:{password}@{host}/{database}?charset={charset}".format(
         username="root",
@@ -83,18 +99,13 @@ config = {
 
 
 def get_config():
-    if platform.system() != 'Linux':
+    env = os.getenv("simple_flask_web_env")
+    if env == 'dev':
         conf_ = DevelopmentConfig
+    elif env == 'beta':
+        conf_ = BetaConfig
     else:
-        host_ip = socket.gethostbyname(socket.gethostname())
-        if '192.168.160.80' in host_ip:
-            conf_ = DevelopmentConfig
-        elif '192.168.160.81' in host_ip:
-            conf_ = TestingConfig
-        elif '192.168.160.82' in host_ip:
-            conf_ = ProductionConfig
-        else:
-            conf_ = DevelopmentConfig
+        conf_ = ProductionConfig
     return conf_
 
 

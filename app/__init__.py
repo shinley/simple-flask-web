@@ -6,6 +6,7 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from config import conf
+from app.util.logger_util import logger
 
 import pymysql
 pymysql.install_as_MySQLdb()

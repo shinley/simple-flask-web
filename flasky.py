@@ -1,9 +1,8 @@
 # -*- coding: UTF-8 -*-
 __author__ = 'hunter'
-import click
 from flask_migrate import Migrate
+import os
 from app import create_app, db
-from app.models.user import User, Role
 
 # app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 app = create_app()
@@ -28,4 +27,5 @@ migrate = Migrate(app, db)
 
 
 if __name__ == '__main__':
+    os.putenv("simple-flask-web-env", "dev")
     app.run()
